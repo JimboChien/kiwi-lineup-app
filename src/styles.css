@@ -1,8 +1,23 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
 html, body { height: 100%; margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+body {
+  background-image: url('assets/camouflage-bg.webp');
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-size: 600px;
+}
+
 .spacer { flex: 1 1 auto; }
-.container { padding: 16px; }
+
+.container {
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.6);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
 .section-head { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
 .list { border: 1px dashed #bbb; min-height: 40px; padding: 8px; border-radius: 8px; background: #fafafa; }
 .card-content { display: flex; align-items: center; gap: 12px; }
