@@ -1,0 +1,6 @@
+.card { margin-bottom: 6px; transition: background-color .15s ease, border-color .15s ease; padding: 10px; border: 1px solid #e8f4ff;}
+.card.active { background: #e8f4ff; border: 1px solid #90caf9; }
+.card-content { display:flex; align-items:center; gap:12px; }
+.info { flex:1; }
+.line1 { font-weight:600; }
+.line2 { font-size:12px; color:#6b7280; margin-top:2px; }

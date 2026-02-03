@@ -1,0 +1,176 @@
+<div class="container">
+  <!-- 錯誤狀態 -->
+  <div *ngIf="error()" class="center">
+    <p>{{ error() }}</p>
+  </div>
+
+  <!-- Loading 狀態 -->
+  <div class="loading-overlay" [class.visible]="loading()">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading...</div>
+  </div>
+
+  <!-- 正常畫面 -->
+  <div *ngIf="!error() && !loading()">
+    <div class="toolbar">
+      <button mat-stroked-button color="accent" (click)="toggleMode()">
+        {{ mode() === 'select' ? '播放' : '出賽' }}清單
+      </button>
+    </div>
+    
+    <!-- 出賽清單 -->
+    <div *ngIf="mode() === 'select'" class="select-mode">
+      <div class="pane">
+        <div class="pane-head">
+          <div class="title">所有球員</div>
+          <div class="meta">{{ filteredAll().length }} 位</div>
+        </div>
+
+        <mat-form-field appearance="outline" class="search">
+          <mat-label>搜尋關鍵字</mat-label>
+          <input matInput [(ngModel)]="query" (ngModelChange)="refreshFilters()" placeholder="輸入背號或名字" autocomplete="off"/>
+          <button mat-icon-button matSuffix *ngIf="query" (click)="clearQuery()" aria-label="清除搜尋">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m336-280-56-56 144-144-144-143 56-56 144 144 143-144 56 56-144 143 144 144-56 56-143-144-144 144Z"/></svg>
+          </button>
+        </mat-form-field>
+
+        <mat-selection-list #allList [multiple]="true" class="list">
+          <mat-list-option *ngFor="let p of filteredAll()" [value]="p"
+                          [selected]="activeSelect.has(p.Player)"
+                          (click)="toggleLeft(p)">
+            <div class="opt">
+              <div class="line1">{{ p.Player }}</div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+
+      <!-- 中間：移動按鈕 -->
+      <div class="middle">
+        <button mat-stroked-button color="primary"
+                (click)="moveAllToRight()"
+                [disabled]="filteredAll().length===0">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg>
+        </button>
+
+        <button mat-stroked-button color="primary"
+                (click)="moveSelectedToRight()"
+                [disabled]="activeSelect.size===0">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>
+        </button>
+        <button mat-stroked-button color="primary"
+                (click)="moveSelectedToLeft()"
+                [disabled]="inActiveSelect.size===0">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z"/></svg>
+        </button>
+
+        <button mat-stroked-button color="primary"
+                (click)="moveAllToLeft()"
+                [disabled]="filteredSelected().length===0">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m296-224-56-56 240-240 240 240-56 56-184-183-184 183Zm0-240-56-56 240-240 240 240-56 56-184-183-184 183Z"/></svg>
+        </button>
+      </div>
+
+      <!-- 今日賽賽 -->
+      <div class="pane">
+        <div class="pane-head">
+          <div class="title">今日出賽</div>
+          <div class="meta">{{ selected().length }} 位</div>
+        </div>
+
+        <mat-selection-list #selList [multiple]="true" class="list">
+          <mat-list-option *ngFor="let p of filteredSelected()" [value]="p"
+                          [selected]="inActiveSelect.has(p.Player)"
+                          (click)="toggleRight(p)">
+            <div class="opt">
+              <div class="line1">{{ p.Player }}</div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </div>
+
+    <!-- 播放清單 -->
+    <div *ngIf="mode() === 'list'" class="list-mode">
+      <div cdkDropListGroup>
+        <section>
+          <div class="section-head">
+            <h2>先發棒次</h2>
+          </div>
+          <div cdkDropList [cdkDropListData]="starters()" class="list" 
+          (cdkDropListDropped)="drop($event, 'starters')">
+            <app-card *ngFor="let p of starters(); trackBy: trackByDisplay"
+                      [player]="p"
+                      [active]="isActive(p)"
+                      [paused]="paused()"
+                      (toggle)="onToggle($event)">
+            </app-card>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <h2>板凳區</h2>
+          </div>
+          <div cdkDropList [cdkDropListData]="bench()" class="list"
+          (cdkDropListDropped)="drop($event, 'bench')">
+            <app-card *ngFor="let p of bench(); trackBy: trackByDisplay"
+                        [player]="p"
+                        [active]="isActive(p)"
+                        [paused]="paused()"
+                        (toggle)="onToggle($event)">
+            </app-card>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div id="yt-hidden" style="position:absolute; left:-9999px; top:-9999px; width:320px; height:180px; opacity:0; pointer-events:none;"></div>
+
+  <div *ngIf="!error() && !loading()">
+    <mat-toolbar class="player-toolbar mat-elevation-z6">
+      <div class="toolbar-grid">
+        <!-- 播放中提示 -->
+        <div class="now-playing">
+          <h2>
+            <ng-container *ngIf="currentDisplay() as cid; else noSel">
+              正在播放：{{ displayOf(cid) }}
+            </ng-container>
+            <ng-template #noSel>尚未選擇播放</ng-template>
+          </h2>
+        </div>
+
+        <!-- 音量 -->
+        <div class="volume">
+          <span class="vol-label">音量</span>
+          <!-- 非 iOS Safari：可調整 -->
+          <ng-container *ngIf="!isIOSSafari; else iosVol">
+            <input type="range" min="0" max="100" step="1"
+                  [value]="volume()"
+                  (input)="onVolumeChange($any($event.target).valueAsNumber)"
+                  [disabled]="!currentDisplay()">
+            <span class="vol-value">{{ volume() }}%</span>
+          </ng-container>
+          <!-- iOS Safari：顯示禁用與提示 -->
+          <ng-template #iosVol>
+            <span class="ios-hint">iPhone 無法調整</span>
+            <span class="vol-value">{{ volume() }}%</span>
+          </ng-template>
+        </div>
+
+        <!-- 控制鍵 -->
+        <div class="controls">
+          <button mat-stroked-button color="primary" (click)="pause()" [disabled]="!currentDisplay()">
+            <span *ngIf="!paused() && currentDisplay()"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -1150 960 960" width="20px" fill="#3f51b5"><path d="M520-200v-560h240v560H520Zm-320 0v-560h240v560H200Zm400-80h80v-400h-80v400Zm-320 0h80v-400h-80v400Zm0-400v400-400Zm320 0v400-400Z"/></svg> 暫停</span>
+            <span *ngIf="paused() && currentDisplay()"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -1150 960 960" width="20px" fill="#3f51b5"><path d="M240-240v-480h80v480h-80Zm160 0 400-240-400-240v480Zm80-141v-198l165 99-165 99Zm0-99Z"/></svg> 繼續</span>
+
+            <span *ngIf="!currentDisplay()"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -1150 960 960" width="20px" fill="#c4c6d0"><path d="M520-200v-560h240v560H520Zm-320 0v-560h240v560H200Zm400-80h80v-400h-80v400Zm-320 0h80v-400h-80v400Zm0-400v400-400Zm320 0v400-400Z"/></svg> 暫停</span>
+          </button>
+          <button mat-flat-button color="primary" (click)="playNext()">
+            <span><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -1150 960 960" width="20px" fill="#fff"><path d="M660-240v-480h80v480h-80Zm-440 0v-480l360 240-360 240Zm80-240Zm0 90 136-90-136-90v180Z"/></svg> 下一首</span>
+          </button>
+        </div>
+      </div>
+    </mat-toolbar>
+  </div>
+</div>

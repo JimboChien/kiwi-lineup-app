@@ -1,0 +1,174 @@
+.toolbar { margin-bottom: 1em; }
+.center { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 0; gap:12px; }
+.loading-text { color:#6b7280; font-size:14px; }
+.section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.actions { display:flex; gap:8px; align-items:center; }
+
+.sr-only-player {
+  position: absolute;
+  left: -9999px; /* 移到畫面外 */
+  width: 300px;  /* 要有寬高，不然 API 可能不建 */
+  height: 150px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 固定底部工具列 */
+.player-toolbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: auto;
+  padding: 8px 12px;
+  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.1); /* 增加陰影，區隔內容 */
+}
+
+/* 頁面內容避免被工具列遮住 */
+.container, .content, main {
+  padding-bottom: 100px;
+}
+
+/* 桌面寬度：三等分 */
+.toolbar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 三個區塊等寬 */
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.now-playing {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.volume {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 桌面：音量置中 */
+  gap: 8px;
+}
+.volume .vol-label { color:#6b7280; font-size: 12px; }
+.volume input[type="range"] { width: 160px; }
+.volume .vol-value { width: 36px; text-align: right; color:#374151; }
+
+.controls {
+  display: flex;
+  justify-content: flex-end; /* 桌面：靠右 */
+  gap: 8px;
+}
+
+/* 窄螢幕：兩行 */
+@media (max-width: 768px) {
+  .toolbar-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "now now"
+      "vol ctr";
+    row-gap: 8px;
+  }
+  .now-playing {
+    grid-area: now;
+    text-align: center;   /* 播放提示置中 */
+    border-bottom: 1px solid #e5e7eb;
+    padding: 3px;
+  }
+  .volume {
+    grid-area: vol;
+    justify-content: flex-start;
+    padding: 2px 0px;
+  }
+  .controls {
+    grid-area: ctr;
+    justify-content: flex-end;
+    padding: 2px 0px;
+  }
+  .volume input[type="range"] { width: 120px; }
+  .select-grid { grid-template-columns: 1fr; }
+  .middle { flex-direction: row; justify-content: space-evenly; }
+}
+
+@media (max-width: 400px) {
+  .volume input[type="range"] { width: 100px; }
+  .now-playing { font-size: 14px; }
+  .controls button { padding: 0 10px; }
+}
+
+.controls button {
+  border-radius: 20px;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.loading-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  border: 8px solid #e5e7eb;
+  border-top: 8px solid #3f51b5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loading-text {
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.pane { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; background: #fff; }
+.pane-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.pane-head .title { font-weight: 600; }
+.pane-head .meta { color:#6b7280; font-size:12px; }
+.search { width: 100%; margin-bottom: 8px; }
+.list { overflow: auto; border: 1px dashed #e5e7eb; border-radius: 6px; }
+.select-mode .list { height: 160px; }
+.opt .line1 { font-weight: 600; }
+.middle { display: flex; flex-direction: row; gap: 8px; align-items: center; justify-content: center; margin: 12px 0px;}
+.middle button[disabled] {
+  opacity: 0.3 !important;         /* 更淡 */
+  border-color: #ddd !important;   /* 邊框變灰 */
+  background-color: #f5f5f5 !important;
+  cursor: not-allowed;
+}
+
+.middle button[disabled] svg {
+  fill: #bbb !important;           /* 圖示也一起變灰 */
+}
+
+.volume .ios-hint {
+  font-size: 12px;
+  color: #6b7280;
+  text-decoration: line-through;
+}

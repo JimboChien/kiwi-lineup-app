@@ -1,0 +1,12 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+html, body { height: 100%; margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.spacer { flex: 1 1 auto; }
+.container { padding: 16px; }
+.section-head { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
+.list { border: 1px dashed #bbb; min-height: 40px; padding: 8px; border-radius: 8px; background: #fafafa; }
+.card-content { display: flex; align-items: center; gap: 12px; }
+.drag { cursor: grab; color: #888; font-weight: bold; }
+.info { flex: 1; font-weight: 500; }
+.line1 { font-weight: 600; }
+.line2 { font-size: 12px; color: #6b7280; margin-top: 2px; }
