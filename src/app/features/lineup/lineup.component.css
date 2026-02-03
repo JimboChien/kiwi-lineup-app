@@ -113,7 +113,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.5);
   z-index: 2000;
   opacity: 0;
   visibility: hidden;
